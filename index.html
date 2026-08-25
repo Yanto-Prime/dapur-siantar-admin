@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#1C1210" />
 <title>Aplikasi Dapur Siantar</title>
+<link rel="manifest" href="manifest.json" />
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap');
 
@@ -19,7 +22,7 @@
   body { margin: 0; background: #f7f3ec; color: var(--ink); font-family: 'Work Sans', sans-serif; padding-bottom: 80px; }
   
   /* Mobile App Header */
-  .app-header { background: var(--bg-dark); color: var(--cream); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; sticky: top; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  .app-header { background: var(--bg-dark); color: var(--cream); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
   .app-brand { font-family: 'Fraunces', serif; font-size: 18px; display: flex; align-items: center; gap: 8px; }
   .install-badge { background: var(--gold); color: var(--bg-dark); font-size: 11px; padding: 6px 12px; border-radius: 99px; font-weight: 600; border: none; cursor: pointer; }
 
@@ -176,7 +179,13 @@
     updateCartUI();
   }
 
-  // Otomatis tangkap jika pembeli mengklik pesanan dari Web Utama
+  // Registrasi Service Worker Otomatis untuk PWA & PWABuilder
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     renderMenu();
     const params = new URLSearchParams(window.location.search);
