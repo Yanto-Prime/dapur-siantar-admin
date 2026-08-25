@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Panel — Dapur Siantar</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Aplikasi Dapur Siantar</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
-  
+  @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap');
+
   :root {
     --bg-dark: #1C1210;
     --maroon: #7A2E2E;
@@ -15,193 +15,185 @@
     --ink: #2B211D;
     --border: #d8cdb8;
   }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'Work Sans', sans-serif; padding: 20px; }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
-  h1 { font-size: 20px; margin: 0; color: var(--maroon); }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: #f7f3ec; color: var(--ink); font-family: 'Work Sans', sans-serif; padding-bottom: 80px; }
   
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: #fff; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
-  .stat-card p { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
-  .stat-card h2 { margin: 6px 0 0; font-size: 18px; color: var(--maroon); font-family: 'IBM Plex Mono', monospace; }
+  /* Mobile App Header */
+  .app-header { background: var(--bg-dark); color: var(--cream); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; sticky: top; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  .app-brand { font-family: 'Fraunces', serif; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+  .install-badge { background: var(--gold); color: var(--bg-dark); font-size: 11px; padding: 6px 12px; border-radius: 99px; font-weight: 600; border: none; cursor: pointer; }
 
-  .layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-  @media(min-width: 768px){ .layout { grid-template-columns: 320px 1fr; } }
-
-  .card-box { background: #fff; padding: 16px; border-radius: 10px; border: 1px solid var(--border); }
-  .card-box h3 { margin-top: 0; font-size: 15px; color: var(--ink); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-
-  .field { margin-bottom: 10px; }
-  .field label { display: block; font-size: 11px; margin-bottom: 4px; font-weight: 500; }
-  .field input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; }
+  /* App Container */
+  .container { padding: 16px; max-width: 480px; margin: 0 auto; }
   
-  button.btn { width: 100%; padding: 10px; background: var(--maroon); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
-  .alert-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 12px; display: none; }
+  /* Auto-Catch Alert Box */
+  .alert-box { background: #E3F2FD; border: 1px solid #90CAF9; color: #0D47A1; padding: 12px; border-radius: 12px; font-size: 13px; margin-bottom: 16px; display: none; line-height: 1.4; }
+  
+  .section-title { font-size: 16px; font-weight: 700; margin: 16px 0 12px; color: var(--maroon); display: flex; align-items: center; gap: 6px; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
-  th { background: var(--bg-dark); color: var(--cream); }
-  .btn-wa { padding: 4px 8px; background: #25D366; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+  /* Menu List Layout */
+  .menu-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .menu-info h4 { margin: 0 0 4px; font-size: 15px; color: var(--ink); }
+  .menu-info p.seller { margin: 0 0 6px; font-size: 12px; color: var(--maroon); }
+  .menu-info p.price { margin: 0; font-size: 13px; font-weight: 600; color: var(--gold); }
+  .btn-add { background: var(--maroon); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; }
+
+  /* Cart Drawer Bottom Bar */
+  .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-dark); color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 99; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+  .cart-info { font-size: 13px; }
+  .cart-total { font-weight: 700; color: var(--gold); font-size: 15px; }
+  .btn-checkout { background: var(--gold); color: var(--bg-dark); border: none; padding: 10px 18px; border-radius: 99px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+  /* Modal Form */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 1000; }
+  .overlay.open { display: flex; }
+  .modal { background: #fff; width: 100%; max-width: 480px; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
+  .modal h3 { margin: 0 0 16px; font-size: 18px; color: var(--maroon); }
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+  .field input, .field textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 14px; outline: none; }
+  .btn-submit { width: 100%; padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; margin-top: 8px; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>📊 App Admin Dapur Siantar</h1>
-  <button onclick="clearData()" style="background:none; border:none; color:red; cursor:pointer; font-size:12px;">Reset Data</button>
-</header>
-
-<div class="stats-grid">
-  <div class="stat-card">
-    <p>Total Pesanan</p>
-    <h2 id="stat-count">0</h2>
-  </div>
-  <div class="stat-card">
-    <p>Omset Warung</p>
-    <h2 id="stat-omset">Rp 0</h2>
-  </div>
-  <div class="stat-card">
-    <p>Komisi Kita</p>
-    <h2 id="stat-komisi">Rp 0</h2>
-  </div>
+<div class="app-header">
+  <div class="app-brand">📱 <span>Dapur Siantar App</span></div>
+  <button class="install-badge" onclick="alert('Tekan titik 3 di browser HP lalu pilih \'Tambahkan ke Layar Utama / Install App\'')">📲 Pasang App</button>
 </div>
 
-<div class="layout">
-  <!-- FORM INPUT / AUTO CATCH -->
-  <div class="card-box">
-    <h3>Catat Transaksi</h3>
-    <div class="alert-box" id="urlAlert">⚡ Data pesanan baru masuk dari Web Utama!</div>
-    
-    <form id="orderForm" onsubmit="addOrder(event)">
-      <div class="field">
-        <label>Warung Mitra</label>
-        <input type="text" id="shopName" placeholder="Toko Roti Ganda" required />
-      </div>
-      <div class="field">
-        <label>No. WA Warung</label>
-        <input type="tel" id="shopPhone" placeholder="62813xxxxxxx" required />
-      </div>
-      <div class="field">
-        <label>Detail Item</label>
-        <input type="text" id="itemDetail" placeholder="2x Roti Meses" required />
-      </div>
-      <div class="field">
-        <label>Total Harga (Rp)</label>
-        <input type="number" id="totalPrice" placeholder="30000" required />
-      </div>
-      <div class="field">
-        <label>Potongan Komisi (%)</label>
-        <input type="number" id="commissionRate" value="10" required />
-      </div>
-      <button type="submit" class="btn">💾 Simpan & Oper ke WA Warung</button>
-    </form>
+<div class="container">
+  <div class="alert-box" id="incomingAlert">
+    ✨ <b>Item Ditemukan!</b> Pesanan yang Anda pilih di web tadi sudah otomatis dimasukkan ke keranjang app.
   </div>
 
-  <!-- TABEL RIWAYAT TRANSAKSI -->
-  <div class="card-box">
-    <h3>Rekap Harian (Local Storage)</h3>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Warung</th>
-            <th>Pesanan</th>
-            <th>Total</th>
-            <th>Komisi</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="orderTable"></tbody>
-      </table>
-    </div>
+  <div class="section-title">🍽️ Menu Kuliner Siantar</div>
+  <div id="menu-list"></div>
+</div>
+
+<div class="cart-bar" id="cartBar">
+  <div class="cart-info">
+    <span id="cartCount">0 Item</span> • <span class="cart-total" id="cartTotal">Rp 0</span>
+  </div>
+  <button class="btn-checkout" onclick="openCheckoutModal()">Checkout Sekarang →</button>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="overlay" id="checkoutModal">
+  <div class="modal">
+    <h3>🛒 Konfirmasi Pesanan App</h3>
+    <form onsubmit="processOrder(event)">
+      <div class="field">
+        <label>Nama Pemesan</label>
+        <input type="text" id="custName" placeholder="Masukkan nama Anda" required />
+      </div>
+      <div class="field">
+        <label>Nomor WhatsApp</label>
+        <input type="tel" id="custPhone" placeholder="08xxxxxxxxxx" required />
+      </div>
+      <div class="field">
+        <label>Alamat / Lokasi Antar</label>
+        <textarea id="custAddress" rows="2" placeholder="Jl. Sutomo No. XX, Siantar..." required></textarea>
+      </div>
+      <button type="submit" class="btn-submit">💬 Kirim via WhatsApp App</button>
+      <button type="button" onclick="closeCheckoutModal()" style="width:100%; background:none; border:none; color:#666; padding:10px; margin-top:4px; font-size:12px; cursor:pointer;">Batal</button>
+    </form>
   </div>
 </div>
 
 <script>
-  let orders = JSON.parse(localStorage.getItem("ds_orders_log") || "[]");
+  const window_CONNECTOR_PHONE = "6283893870823"; // Nomor WA Penghubung/Admin
 
-  // Otomatis baca lemparan data dari Web Utama via Parameter URL
+  const menuItems = [
+    { id: 1, name: "Roti Ganda Meses", seller: "Toko Roti Ganda", price: 30000 },
+    { id: 2, name: "Kopi Kok Tong 250gr", seller: "Kedai Kopi Kok Tong", price: 45000 },
+    { id: 3, name: "Mie Gomak Andaliman", seller: "Warung Bu Rina", price: 15000 },
+    { id: 4, name: "Sup Ubi Siantar", seller: "Dapur Ubi Uwak", price: 12000 },
+    { id: 5, name: "Gulai Ayam Rempah", seller: "RM Boru Siantar", price: 28000 }
+  ];
+
+  let cart = [];
+
+  function renderMenu() {
+    const list = document.getElementById("menu-list");
+    list.innerHTML = menuItems.map(item => `
+      <div class="menu-card">
+        <div class="menu-info">
+          <h4>${item.name}</h4>
+          <p class="seller">🏪 ${item.seller}</p>
+          <p class="price">Rp ${item.price.toLocaleString("id-ID")}</p>
+        </div>
+        <button class="btn-add" onclick="addToCart(${item.id})">+ Tambah</button>
+      </div>
+    `).join("");
+  }
+
+  function addToCart(id) {
+    const item = menuItems.find(m => m.id === id);
+    cart.push(item);
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    document.getElementById("cartCount").textContent = cart.length + " Item";
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    document.getElementById("cartTotal").textContent = "Rp " + total.toLocaleString("id-ID");
+  }
+
+  function openCheckoutModal() {
+    if(cart.length === 0) {
+      alert("Keranjang aplikasi lu masih kosong, wok!");
+      return;
+    }
+    document.getElementById("checkoutModal").classList.add("open");
+  }
+
+  function closeCheckoutModal() {
+    document.getElementById("checkoutModal").classList.remove("open");
+  }
+
+  function processOrder(e) {
+    e.preventDefault();
+    const name = document.getElementById("custName").value.trim();
+    const phone = document.getElementById("custPhone").value.trim();
+    const address = document.getElementById("custAddress").value.trim();
+
+    const itemsSummary = cart.map(i => `- ${i.name} (${i.seller}): Rp ${i.price.toLocaleString("id-ID")}`).join("\n");
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+    const msg = encodeURIComponent(
+      `*PESANAN VIA DAPUR SIANTAR APP*\n\n` +
+      `*Nama Pemesan:* ${name}\n` +
+      `*No WA:* ${phone}\n` +
+      `*Alamat:* ${address}\n\n` +
+      `*Daftar Pesanan:*\n${itemsSummary}\n\n` +
+      `*Total Bayar:* Rp ${total.toLocaleString("id-ID")}`
+    );
+
+    window.open(`https://wa.me/${window_CONNECTOR_PHONE}?text=${msg}`, "_blank");
+    closeCheckoutModal();
+    cart = [];
+    updateCartUI();
+  }
+
+  // Otomatis tangkap jika pembeli mengklik pesanan dari Web Utama
   window.addEventListener("DOMContentLoaded", () => {
+    renderMenu();
     const params = new URLSearchParams(window.location.search);
-    if (params.has("shop")) {
-      document.getElementById("shopName").value = params.get("shop") || "";
-      document.getElementById("itemDetail").value = params.get("item") || "";
-      document.getElementById("totalPrice").value = params.get("total") || "";
-      document.getElementById("urlAlert").style.display = "block";
+    const itemName = params.get("item");
+    const sellerName = params.get("seller");
+
+    if (itemName) {
+      document.getElementById("incomingAlert").style.display = "block";
+      const found = menuItems.find(m => m.name.toLowerCase().includes(itemName.toLowerCase()));
+      if (found) {
+        addToCart(found.id);
+      } else {
+        cart.push({ id: Date.now(), name: itemName, seller: sellerName || "Mitra Siantar", price: 20000 });
+        updateCartUI();
+      }
     }
   });
-
-  function renderData() {
-    const tbody = document.getElementById("orderTable");
-    tbody.innerHTML = "";
-    
-    let totalCount = orders.length;
-    let totalOmset = 0;
-    let totalKomisi = 0;
-
-    orders.forEach((o, index) => {
-      totalOmset += o.total;
-      totalKomisi += o.commission;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td><b>${o.shop}</b></td>
-        <td>${o.detail}</td>
-        <td>Rp ${o.total.toLocaleString("id-ID")}</td>
-        <td style="color:var(--maroon);font-weight:600;">Rp ${o.commission.toLocaleString("id-ID")}</td>
-        <td>
-          <button class="btn-wa" onclick="forwardToShop(${index})">📲 Forward WA</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById("stat-count").textContent = totalCount;
-    document.getElementById("stat-omset").textContent = "Rp " + totalOmset.toLocaleString("id-ID");
-    document.getElementById("stat-komisi").textContent = "Rp " + totalKomisi.toLocaleString("id-ID");
-
-    localStorage.setItem("ds_orders_log", JSON.stringify(orders));
-  }
-
-  function addOrder(e) {
-    e.preventDefault();
-    const shop = document.getElementById("shopName").value.trim();
-    const phone = document.getElementById("shopPhone").value.trim();
-    const detail = document.getElementById("itemDetail").value.trim();
-    const total = parseFloat(document.getElementById("totalPrice").value);
-    const rate = parseFloat(document.getElementById("commissionRate").value);
-    const commission = (total * rate) / 100;
-
-    orders.push({ shop, phone, detail, total, commission });
-    renderData();
-
-    forwardToShop(orders.length - 1);
-
-    document.getElementById("orderForm").reset();
-    document.getElementById("commissionRate").value = 10;
-    document.getElementById("urlAlert").style.display = "none";
-  }
-
-  function forwardToShop(index) {
-    const o = orders[index];
-    const msg = encodeURIComponent(
-      `*PESANAN DARI DAPUR SIANTAR*\n\n` +
-      `Halo *${o.shop}*, ada pesanan baru:\n` +
-      `- *Item:* ${o.detail}\n` +
-      `- *Total:* Rp ${o.total.toLocaleString("id-ID")}\n\n` +
-      `Mohon langsung diproses ya, terima kasih!`
-    );
-    window.open(`https://wa.me/${o.phone}?text=${msg}`, "_blank");
-  }
-
-  function clearData() {
-    if(confirm("Hapus seluruh rekap transaksi?")) {
-      orders = [];
-      renderData();
-    }
-  }
-
-  renderData();
 </script>
 </body>
 </html>
