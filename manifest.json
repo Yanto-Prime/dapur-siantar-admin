@@ -3,13 +3,15 @@
   "short_name": "DapurSiantar",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1C1210",
   "theme_color": "#1C1210",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3081/3081559.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
