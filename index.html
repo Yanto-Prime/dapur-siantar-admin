@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Panel — Dapur Siantar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+  
+  :root {
+    --bg-dark: #1C1210;
+    --maroon: #7A2E2E;
+    --gold: #C89B3C;
+    --cream: #F1E9DC;
+    --ink: #2B211D;
+    --border: #d8cdb8;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--cream); color: var(--ink); font-family: 'Work Sans', sans-serif; padding: 20px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
+  h1 { font-size: 20px; margin: 0; color: var(--maroon); }
+  
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #fff; padding: 14px; border-radius: 10px; border: 1px solid var(--border); }
+  .stat-card p { margin: 0; font-size: 11px; color: #666; text-transform: uppercase; }
+  .stat-card h2 { margin: 6px 0 0; font-size: 18px; color: var(--maroon); font-family: 'IBM Plex Mono', monospace; }
+
+  .layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media(min-width: 768px){ .layout { grid-template-columns: 320px 1fr; } }
+
+  .card-box { background: #fff; padding: 16px; border-radius: 10px; border: 1px solid var(--border); }
+  .card-box h3 { margin-top: 0; font-size: 15px; color: var(--ink); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 11px; margin-bottom: 4px; font-weight: 500; }
+  .field input { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; }
+  
+  button.btn { width: 100%; padding: 10px; background: var(--maroon); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+  .alert-box { background: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 12px; display: none; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg-dark); color: var(--cream); }
+  .btn-wa { padding: 4px 8px; background: #25D366; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📊 App Admin Dapur Siantar</h1>
+  <button onclick="clearData()" style="background:none; border:none; color:red; cursor:pointer; font-size:12px;">Reset Data</button>
+</header>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <p>Total Pesanan</p>
+    <h2 id="stat-count">0</h2>
+  </div>
+  <div class="stat-card">
+    <p>Omset Warung</p>
+    <h2 id="stat-omset">Rp 0</h2>
+  </div>
+  <div class="stat-card">
+    <p>Komisi Kita</p>
+    <h2 id="stat-komisi">Rp 0</h2>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- FORM INPUT / AUTO CATCH -->
+  <div class="card-box">
+    <h3>Catat Transaksi</h3>
+    <div class="alert-box" id="urlAlert">⚡ Data pesanan baru masuk dari Web Utama!</div>
+    
+    <form id="orderForm" onsubmit="addOrder(event)">
+      <div class="field">
+        <label>Warung Mitra</label>
+        <input type="text" id="shopName" placeholder="Toko Roti Ganda" required />
+      </div>
+      <div class="field">
+        <label>No. WA Warung</label>
+        <input type="tel" id="shopPhone" placeholder="62813xxxxxxx" required />
+      </div>
+      <div class="field">
+        <label>Detail Item</label>
+        <input type="text" id="itemDetail" placeholder="2x Roti Meses" required />
+      </div>
+      <div class="field">
+        <label>Total Harga (Rp)</label>
+        <input type="number" id="totalPrice" placeholder="30000" required />
+      </div>
+      <div class="field">
+        <label>Potongan Komisi (%)</label>
+        <input type="number" id="commissionRate" value="10" required />
+      </div>
+      <button type="submit" class="btn">💾 Simpan & Oper ke WA Warung</button>
+    </form>
+  </div>
+
+  <!-- TABEL RIWAYAT TRANSAKSI -->
+  <div class="card-box">
+    <h3>Rekap Harian (Local Storage)</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Warung</th>
+            <th>Pesanan</th>
+            <th>Total</th>
+            <th>Komisi</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="orderTable"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  let orders = JSON.parse(localStorage.getItem("ds_orders_log") || "[]");
+
+  // Otomatis baca lemparan data dari Web Utama via Parameter URL
+  window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("shop")) {
+      document.getElementById("shopName").value = params.get("shop") || "";
+      document.getElementById("itemDetail").value = params.get("item") || "";
+      document.getElementById("totalPrice").value = params.get("total") || "";
+      document.getElementById("urlAlert").style.display = "block";
+    }
+  });
+
+  function renderData() {
+    const tbody = document.getElementById("orderTable");
+    tbody.innerHTML = "";
+    
+    let totalCount = orders.length;
+    let totalOmset = 0;
+    let totalKomisi = 0;
+
+    orders.forEach((o, index) => {
+      totalOmset += o.total;
+      totalKomisi += o.commission;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><b>${o.shop}</b></td>
+        <td>${o.detail}</td>
+        <td>Rp ${o.total.toLocaleString("id-ID")}</td>
+        <td style="color:var(--maroon);font-weight:600;">Rp ${o.commission.toLocaleString("id-ID")}</td>
+        <td>
+          <button class="btn-wa" onclick="forwardToShop(${index})">📲 Forward WA</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById("stat-count").textContent = totalCount;
+    document.getElementById("stat-omset").textContent = "Rp " + totalOmset.toLocaleString("id-ID");
+    document.getElementById("stat-komisi").textContent = "Rp " + totalKomisi.toLocaleString("id-ID");
+
+    localStorage.setItem("ds_orders_log", JSON.stringify(orders));
+  }
+
+  function addOrder(e) {
+    e.preventDefault();
+    const shop = document.getElementById("shopName").value.trim();
+    const phone = document.getElementById("shopPhone").value.trim();
+    const detail = document.getElementById("itemDetail").value.trim();
+    const total = parseFloat(document.getElementById("totalPrice").value);
+    const rate = parseFloat(document.getElementById("commissionRate").value);
+    const commission = (total * rate) / 100;
+
+    orders.push({ shop, phone, detail, total, commission });
+    renderData();
+
+    forwardToShop(orders.length - 1);
+
+    document.getElementById("orderForm").reset();
+    document.getElementById("commissionRate").value = 10;
+    document.getElementById("urlAlert").style.display = "none";
+  }
+
+  function forwardToShop(index) {
+    const o = orders[index];
+    const msg = encodeURIComponent(
+      `*PESANAN DARI DAPUR SIANTAR*\n\n` +
+      `Halo *${o.shop}*, ada pesanan baru:\n` +
+      `- *Item:* ${o.detail}\n` +
+      `- *Total:* Rp ${o.total.toLocaleString("id-ID")}\n\n` +
+      `Mohon langsung diproses ya, terima kasih!`
+    );
+    window.open(`https://wa.me/${o.phone}?text=${msg}`, "_blank");
+  }
+
+  function clearData() {
+    if(confirm("Hapus seluruh rekap transaksi?")) {
+      orders = [];
+      renderData();
+    }
+  }
+
+  renderData();
+</script>
+</body>
+</html>
